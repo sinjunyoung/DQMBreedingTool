@@ -1,0 +1,76 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <ApplicationIcon>app.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Assets\Images\All.png" />
+    <None Remove="Assets\Images\Attack.png" />
+    <None Remove="Assets\Images\Beast.png" />
+    <None Remove="Assets\Images\Brain.png" />
+    <None Remove="Assets\Images\Demon.png" />
+    <None Remove="Assets\Images\DQM1.png" />
+    <None Remove="Assets\Images\Dragon.png" />
+    <None Remove="Assets\Images\Heart.png" />
+    <None Remove="Assets\Images\HP.png" />
+    <None Remove="Assets\Images\Icon.png" />
+    <None Remove="Assets\Images\Material.png" />
+    <None Remove="Assets\Images\MP.png" />
+    <None Remove="Assets\Images\Name.png" />
+    <None Remove="Assets\Images\Nature.png" />
+    <None Remove="Assets\Images\Rank.png" />
+    <None Remove="Assets\Images\Recipe.png" />
+    <None Remove="Assets\Images\Running.png" />
+    <None Remove="Assets\Images\Search.png" />
+    <None Remove="Assets\Images\Shield.png" />
+    <None Remove="Assets\Images\Skill.png" />
+    <None Remove="Assets\Images\Slime.png" />
+    <None Remove="Assets\Images\Unknown.png" />
+    <None Remove="Assets\Images\Zombie.png" />
+    <None Remove="BUILD_Single.bat" />
+    <None Remove="LICENSE.txt" />
+    <None Remove="README.md" />
+    <None Remove="Resources\icon.zip" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="app.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\dqm_data.zip" />
+    <EmbeddedResource Include="Resources\icon.zip" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\Images\All.png" />
+    <Resource Include="Assets\Images\Attack.png" />
+    <Resource Include="Assets\Images\Beast.png" />
+    <Resource Include="Assets\Images\Brain.png" />
+    <Resource Include="Assets\Images\Demon.png" />
+    <Resource Include="Assets\Images\DQM1.png" />
+    <Resource Include="Assets\Images\Dragon.png" />
+    <Resource Include="Assets\Images\HP.png" />
+    <Resource Include="Assets\Images\Icon.png" />
+    <Resource Include="Assets\Images\Material.png" />
+    <Resource Include="Assets\Images\MP.png" />
+    <Resource Include="Assets\Images\Name.png" />
+    <Resource Include="Assets\Images\Nature.png" />
+    <Resource Include="Assets\Images\Rank.png" />
+    <Resource Include="Assets\Images\Recipe.png" />
+    <Resource Include="Assets\Images\Running.png" />
+    <Resource Include="Assets\Images\Search.png" />
+    <Resource Include="Assets\Images\Shield.png" />
+    <Resource Include="Assets\Images\Skill.png" />
+    <Resource Include="Assets\Images\Slime.png" />
+    <Resource Include="Assets\Images\Unknown.png" />
+    <Resource Include="Assets\Images\Zombie.png" />
+  </ItemGroup>
+
+</Project>
