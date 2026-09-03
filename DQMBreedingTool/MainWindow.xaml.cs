@@ -21,6 +21,7 @@ public partial class MainWindow : Window
         _repo.Load();
         InitFilters();
         RunSearch();
+        InitGeneralCalculator();
     }
 
     protected override void OnSourceInitialized(EventArgs e)
@@ -115,5 +116,33 @@ public partial class MainWindow : Window
         var root = _repo.BuildTree(monsterId);
         var treeWindow = new TreeWindow(root) { Owner = this };
         treeWindow.Show();
+    }
+
+    void InitGeneralCalculator()
+    {
+        var monsterList = _repo.Monsters.Values
+            .Where(m => !string.IsNullOrEmpty(m.Family))
+            .OrderBy(m => m.Name)
+            .ToList();
+
+        DadCombo.ItemsSource = monsterList;
+        MomCombo.ItemsSource = monsterList;
+    }
+
+    void CalcButton_Click(object sender, RoutedEventArgs e)
+    {
+        var dad = DadCombo.SelectedItem as MonsterData;
+        var mom = MomCombo.SelectedItem as MonsterData;
+
+        if (dad == null || mom == null)
+        {
+            GeneralResultInfoText.Text = "아빠/엄마 몬스터를 목록에서 선택해줘";
+            GeneralResultListView.ItemsSource = null;
+            return;
+        }
+
+        var results = GeneralBreedingCalculator.Calculate(dad, mom, _repo);
+        GeneralResultListView.ItemsSource = results;
+        GeneralResultInfoText.Text = $"{results.Count}종 후보";
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
 using DQMBreedingTool.Models;
+using DQMBreedingTool.Services;
 
 namespace DQMBreedingTool.Data;
 
@@ -14,6 +15,7 @@ public class DataRepository
     public List<string> Families { get; } = new();
     public List<string> Ranks { get; } = new() { "F", "E", "D", "C", "B", "A", "S", "SS" };
     Dictionary<int, System.Windows.Media.ImageSource> _icons = new();
+    Dictionary<string, List<MonsterData>> _byFamily = new();
 
     public void Load()
     {
@@ -41,6 +43,40 @@ public class DataRepository
             }
             list.Add(r);
         }
+
+        BuildFamilyIndex();
+    }
+
+    void BuildFamilyIndex()
+    {
+        foreach (var m in Monsters.Values)
+        {
+            if (string.IsNullOrEmpty(m.Family)) continue;
+            if (!_byFamily.TryGetValue(m.Family, out var list))
+            {
+                list = new List<MonsterData>();
+                _byFamily[m.Family] = list;
+            }
+            list.Add(m);
+        }
+
+        foreach (var list in _byFamily.Values)
+            list.Sort((a, b) => a.Wigye.CompareTo(b.Wigye));
+    }
+
+    public MonsterData? NextInFamily(string family, int wigyeThreshold)
+    {
+        if (!_byFamily.TryGetValue(family, out var list)) return null;
+        foreach (var m in list)
+        {
+            if (m.Wigye > wigyeThreshold) return m;
+        }
+        return null;
+    }
+
+    public List<MonsterData> GetFamilySorted(string family)
+    {
+        return _byFamily.TryGetValue(family, out var list) ? list : new List<MonsterData>();
     }
 
     void LoadMonsters(string[] lines)
@@ -49,7 +85,7 @@ public class DataRepository
         {
             if (string.IsNullOrWhiteSpace(lines[i])) continue;
             var f = CsvLine.Split(lines[i]);
-            if (f.Length < 18) continue;
+            if (f.Length < 19) continue;
             if (!int.TryParse(f[0], out int id)) continue;
             if (string.IsNullOrWhiteSpace(f[1])) continue;
 
@@ -60,19 +96,20 @@ public class DataRepository
                 Scale = ParseD(f[2]),
                 Family = f[3],
                 Rank = f[4],
-                Hp = ParseI(f[5]),
-                Mp = ParseI(f[6]),
-                Atk = ParseI(f[7]),
-                Def = ParseI(f[8]),
-                Agi = ParseI(f[9]),
-                Wis = ParseI(f[10]),
-                Res1 = ParseI(f[11]),
-                Res2 = ParseI(f[12]),
-                Res3 = ParseI(f[13]),
-                Res4 = ParseI(f[14]),
-                Res5 = ParseI(f[15]),
-                Breedable = f[16].Contains("가능"),
-                SkillName = f.Length > 17 ? f[17] : "",
+                Wigye = ParseI(f[5]),
+                Hp = ParseI(f[6]),
+                Mp = ParseI(f[7]),
+                Atk = ParseI(f[8]),
+                Def = ParseI(f[9]),
+                Agi = ParseI(f[10]),
+                Wis = ParseI(f[11]),
+                Res1 = ParseI(f[12]),
+                Res2 = ParseI(f[13]),
+                Res3 = ParseI(f[14]),
+                Res4 = ParseI(f[15]),
+                Res5 = ParseI(f[16]),
+                Breedable = f[17].Contains("가능"),
+                SkillName = f.Length > 18 ? f[18] : "",
             };
             m.Icon = _icons.TryGetValue(id, out var icon) ? icon : null;
             Monsters[id] = m;
@@ -167,6 +204,42 @@ public class DataRepository
                 }
 
                 node.Children.Add(groupNode);
+            }
+        }
+        else if (m != null && m.Rank != "F" && m.Breedable)
+        {
+            var suggestions = GeneralBreedingCalculator.SuggestParents(m, this);
+            if (suggestions.Count > 0)
+            {
+                foreach (var (dadM, momM, rule) in suggestions)
+                {
+                    var groupNode = new RecipeNode
+                    {
+                        MonsterId = -1,
+                        IsRecipeGroup = true,
+                        SourceLabel = rule,
+                    };
+
+                    var v1 = new HashSet<int>(visited);
+                    groupNode.Children.Add(BuildTreeInternal(dadM.Id, depth - 1, v1));
+
+                    if (momM.Id != dadM.Id)
+                    {
+                        var v2 = new HashSet<int>(visited);
+                        groupNode.Children.Add(BuildTreeInternal(momM.Id, depth - 1, v2));
+                    }
+
+                    node.Children.Add(groupNode);
+                }
+            }
+            else
+            {
+                node.Children.Add(new RecipeNode
+                {
+                    MonsterId = -1,
+                    IsRecipeGroup = true,
+                    SourceLabel = "일반배합(위계배합) 대상으로 추정되나 구체적 조합을 찾지 못함",
+                });
             }
         }
 
