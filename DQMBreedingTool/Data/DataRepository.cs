@@ -27,6 +27,7 @@ public class DataRepository
         LoadRecipes(csvs["combination_gold_2parent.csv"], RecipeSource.Gold2Parent, 0, 2, 4, 6);
         LoadRecipes(csvs["combination_gold.csv"], RecipeSource.Gold4Material, 0, 2, 4, 10, 6, 8);
         LoadRecipes(csvs["combination_4g.csv"], RecipeSource.FourGeneration, 0, 2, 4, -1, 6, 8);
+        LoadRecipes(csvs["mons_lib_recipe.csv"], RecipeSource.MonsLibFixed, 0, 2, 4, -1);
 
         Families.AddRange(Monsters.Values
             .Select(m => m.Family)
@@ -206,41 +207,14 @@ public class DataRepository
                 node.Children.Add(groupNode);
             }
         }
-        else if (m != null && m.Rank != "F" && m.Breedable)
+        else if (m != null && m.Rank != "F")
         {
-            var suggestions = GeneralBreedingCalculator.SuggestParents(m, this);
-            if (suggestions.Count > 0)
+            node.Children.Add(new RecipeNode
             {
-                foreach (var (dadM, momM, rule) in suggestions)
-                {
-                    var groupNode = new RecipeNode
-                    {
-                        MonsterId = -1,
-                        IsRecipeGroup = true,
-                        SourceLabel = rule,
-                    };
-
-                    var v1 = new HashSet<int>(visited);
-                    groupNode.Children.Add(BuildTreeInternal(dadM.Id, depth - 1, v1));
-
-                    if (momM.Id != dadM.Id)
-                    {
-                        var v2 = new HashSet<int>(visited);
-                        groupNode.Children.Add(BuildTreeInternal(momM.Id, depth - 1, v2));
-                    }
-
-                    node.Children.Add(groupNode);
-                }
-            }
-            else
-            {
-                node.Children.Add(new RecipeNode
-                {
-                    MonsterId = -1,
-                    IsRecipeGroup = true,
-                    SourceLabel = "일반배합(위계배합) 대상으로 추정되나 구체적 조합을 찾지 못함",
-                });
-            }
+                MonsterId = -1,
+                IsRecipeGroup = true,
+                SourceLabel = "고정 레시피 없음 — 야생포획 전용이거나 배합법 미확인",
+            });
         }
 
         return node;

@@ -8,6 +8,7 @@ public enum RecipeSource
     Gold2Parent,
     Gold4Material,
     FourGeneration,
+    MonsLibFixed,
 }
 
 public class RecipeEntry
@@ -23,6 +24,7 @@ public class RecipeEntry
         RecipeSource.Gold2Parent => "골드(2부모)",
         RecipeSource.Gold4Material => "골드(4재료)",
         RecipeSource.FourGeneration => "4체배합",
+        RecipeSource.MonsLibFixed => "기본배합",
         _ => "",
     };
 }
