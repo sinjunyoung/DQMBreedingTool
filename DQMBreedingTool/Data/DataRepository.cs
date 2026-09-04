@@ -16,6 +16,7 @@ public class DataRepository
     public List<string> Ranks { get; } = new() { "F", "E", "D", "C", "B", "A", "S", "SS" };
     Dictionary<int, System.Windows.Media.ImageSource> _icons = new();
     Dictionary<string, List<MonsterData>> _byFamily = new();
+    HashSet<int> _wildOnlyConfirmed = new();
 
     public void Load()
     {
@@ -23,11 +24,12 @@ public class DataRepository
         _icons = IconLoader.LoadIcons("icon.zip");
 
         LoadMonsters(csvs["enmy_kind_full.csv"]);
-        LoadRecipes(csvs["combination_kind.csv"], RecipeSource.Fixed, 4, 0, 2, -1);
+        // CombinationKindTbl.bin(고정배합371)은 MonsLibTbl의 파생/체인 데이터로 밝혀져 사용 안 함(2024 재검증)
         LoadRecipes(csvs["combination_gold_2parent.csv"], RecipeSource.Gold2Parent, 0, 2, 4, 6);
         LoadRecipes(csvs["combination_gold.csv"], RecipeSource.Gold4Material, 0, 2, 4, 10, 6, 8);
         LoadRecipes(csvs["combination_4g.csv"], RecipeSource.FourGeneration, 0, 2, 4, -1, 6, 8);
         LoadRecipes(csvs["mons_lib_recipe.csv"], RecipeSource.MonsLibFixed, 0, 2, 4, -1);
+        LoadWildOnlyConfirmed(csvs["wild_only_confirmed.csv"]);
 
         Families.AddRange(Monsters.Values
             .Select(m => m.Family)
@@ -37,6 +39,8 @@ public class DataRepository
 
         foreach (var r in Recipes)
         {
+            if (_wildOnlyConfirmed.Contains(r.ChildId)) continue; // MonsLibTbl에서 부모없음이 확정된 몬스터는 다른 테이블 기록을 무시함
+
             if (!RecipesByChild.TryGetValue(r.ChildId, out var list))
             {
                 list = new List<RecipeEntry>();
@@ -46,6 +50,18 @@ public class DataRepository
         }
 
         BuildFamilyIndex();
+    }
+
+    void LoadWildOnlyConfirmed(string[] lines)
+    {
+        for (int i = 1; i < lines.Length; i++)
+        {
+            if (string.IsNullOrWhiteSpace(lines[i])) continue;
+            var f = CsvLine.Split(lines[i]);
+            if (f.Length < 1) continue;
+            if (int.TryParse(f[0], out int id))
+                _wildOnlyConfirmed.Add(id);
+        }
     }
 
     void BuildFamilyIndex()
@@ -187,7 +203,16 @@ public class DataRepository
 
         visited.Add(monsterId);
 
-        if (RecipesByChild.TryGetValue(monsterId, out var recipes))
+        if (_wildOnlyConfirmed.Contains(monsterId))
+        {
+            node.Children.Add(new RecipeNode
+            {
+                MonsterId = -1,
+                IsRecipeGroup = true,
+                SourceLabel = "야생포획 전용 (배합 불가 확정)",
+            });
+        }
+        else if (RecipesByChild.TryGetValue(monsterId, out var recipes))
         {
             foreach (var recipe in recipes)
             {
