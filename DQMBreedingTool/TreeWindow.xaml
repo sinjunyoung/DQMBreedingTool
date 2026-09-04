@@ -36,7 +36,5 @@
                 </HierarchicalDataTemplate>
             </TreeView.ItemTemplate>
         </TreeView>
-
-        <Button Style="{DynamicResource GrayButton}" Grid.Row="1" Content="닫기" Width="80" HorizontalAlignment="Right" Margin="0,10,0,0" Click="CloseButton_Click" />
     </Grid>
 </Window>

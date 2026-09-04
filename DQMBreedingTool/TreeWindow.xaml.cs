@@ -23,6 +23,4 @@ public partial class TreeWindow : Window
 
         _ = Win32API.DwmSetWindowAttribute(hWnd, 20, ref value, sizeof(int));
     }
-
-    void CloseButton_Click(object sender, RoutedEventArgs e) => Close();
 }

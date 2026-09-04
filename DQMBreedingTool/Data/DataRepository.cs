@@ -182,10 +182,10 @@ public class DataRepository
     public RecipeNode BuildTree(int monsterId, int maxDepth = 6)
     {
         var visited = new HashSet<int>();
-        return BuildTreeInternal(monsterId, maxDepth, visited);
+        return BuildTreeInternal(monsterId, maxDepth, 0, visited);
     }
 
-    RecipeNode BuildTreeInternal(int monsterId, int depth, HashSet<int> visited)
+    RecipeNode BuildTreeInternal(int monsterId, int depth, int currentDepth, HashSet<int> visited)
     {
         Monsters.TryGetValue(monsterId, out var m);
 
@@ -196,6 +196,8 @@ public class DataRepository
             Family = m?.Family ?? "",
             Rank = m?.Rank ?? "",
             Icon = m?.Icon,
+
+            IsExpanded = currentDepth < 1
         };
 
         if (depth <= 0 || visited.Contains(monsterId))
@@ -210,26 +212,18 @@ public class DataRepository
                 MonsterId = -1,
                 IsRecipeGroup = true,
                 SourceLabel = "야생포획 전용 (배합 불가 확정)",
+                IsExpanded = false
             });
         }
         else if (RecipesByChild.TryGetValue(monsterId, out var recipes))
         {
             foreach (var recipe in recipes)
             {
-                var groupNode = new RecipeNode
-                {
-                    MonsterId = -1,
-                    IsRecipeGroup = true,
-                    SourceLabel = recipe.Sequence > 0 ? $"{recipe.SourceLabel} #{recipe.Sequence}" : recipe.SourceLabel,
-                };
-
                 foreach (var parentId in recipe.ParentIds)
                 {
                     var childVisited = new HashSet<int>(visited);
-                    groupNode.Children.Add(BuildTreeInternal(parentId, depth - 1, childVisited));
+                    node.Children.Add(BuildTreeInternal(parentId, depth - 1, currentDepth + 1, childVisited));
                 }
-
-                node.Children.Add(groupNode);
             }
         }
         else if (m != null && m.Rank != "F")
@@ -239,6 +233,7 @@ public class DataRepository
                 MonsterId = -1,
                 IsRecipeGroup = true,
                 SourceLabel = "고정 레시피 없음 — 야생포획 전용이거나 배합법 미확인",
+                IsExpanded = false
             });
         }
 
