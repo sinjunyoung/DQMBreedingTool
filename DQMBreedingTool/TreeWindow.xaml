@@ -20,15 +20,30 @@
         <TreeView Grid.Row="0" x:Name="RecipeTreeView" Background="Transparent" BorderThickness="0">
             <TreeView.ItemContainerStyle>
                 <Style TargetType="TreeViewItem">
-                    <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=OneWay}" />
+                    <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
                     <Setter Property="Foreground" Value="White" />
                 </Style>
             </TreeView.ItemContainerStyle>
             <TreeView.ItemTemplate>
                 <HierarchicalDataTemplate DataType="{x:Type models:RecipeNode}" ItemsSource="{Binding Children}">
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,2">
+                        <StackPanel.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="하위 확장" Click="ExpandAll_Click">
+                                    <MenuItem.Icon>
+                                        <Image Source="/Assets/Images/Expand.png" Width="24" Height="24" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="하위 축소" Click="CollapseAll_Click">
+                                    <MenuItem.Icon>
+                                        <Image Source="/Assets/Images/Collapse.png" Width="24" Height="24" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                            </ContextMenu>
+                        </StackPanel.ContextMenu>
+
                         <Border Width="28" Height="28" ClipToBounds="True" Margin="0,0,6,0"
-                                Visibility="{Binding Icon, Converter={StaticResource NullToVisibilityConverter}}">
+                        Visibility="{Binding Icon, Converter={StaticResource NullToVisibilityConverter}}">
                             <Image Source="{Binding Icon}" Width="28" Stretch="UniformToFill" VerticalAlignment="Top" />
                         </Border>
                         <TextBlock Text="{Binding Header}" VerticalAlignment="Center" />
@@ -36,5 +51,6 @@
                 </HierarchicalDataTemplate>
             </TreeView.ItemTemplate>
         </TreeView>
+        
     </Grid>
 </Window>

@@ -14,9 +14,11 @@
     <None Remove="Assets\Images\Attack.png" />
     <None Remove="Assets\Images\Beast.png" />
     <None Remove="Assets\Images\Brain.png" />
+    <None Remove="Assets\Images\Collapse.png" />
     <None Remove="Assets\Images\Demon.png" />
     <None Remove="Assets\Images\DQM1.png" />
     <None Remove="Assets\Images\Dragon.png" />
+    <None Remove="Assets\Images\Expand.png" />
     <None Remove="Assets\Images\Heart.png" />
     <None Remove="Assets\Images\HP.png" />
     <None Remove="Assets\Images\Icon.png" />
@@ -53,9 +55,11 @@
     <Resource Include="Assets\Images\Attack.png" />
     <Resource Include="Assets\Images\Beast.png" />
     <Resource Include="Assets\Images\Brain.png" />
+    <Resource Include="Assets\Images\Collapse.png" />
     <Resource Include="Assets\Images\Demon.png" />
     <Resource Include="Assets\Images\DQM1.png" />
     <Resource Include="Assets\Images\Dragon.png" />
+    <Resource Include="Assets\Images\Expand.png" />
     <Resource Include="Assets\Images\HP.png" />
     <Resource Include="Assets\Images\Icon.png" />
     <Resource Include="Assets\Images\Material.png" />

@@ -207,13 +207,13 @@ public class DataRepository
 
         if (_wildOnlyConfirmed.Contains(monsterId))
         {
-            node.Children.Add(new RecipeNode
-            {
-                MonsterId = -1,
-                IsRecipeGroup = true,
-                SourceLabel = "야생포획 전용 (배합 불가 확정)",
-                IsExpanded = false
-            });
+            //node.Children.Add(new RecipeNode
+            //{
+            //    MonsterId = -1,
+            //    IsRecipeGroup = true,
+            //    SourceLabel = "야생포획 전용 (배합 불가 확정)",
+            //    IsExpanded = false
+            //});
         }
         else if (RecipesByChild.TryGetValue(monsterId, out var recipes))
         {

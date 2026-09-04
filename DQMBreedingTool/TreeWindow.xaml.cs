@@ -1,6 +1,7 @@
 using DQMBreedingTool.Models;
 using DQMBreedingTool.Services;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Interop;
 
 namespace DQMBreedingTool;
@@ -22,5 +23,29 @@ public partial class TreeWindow : Window
         int value = 1;
 
         _ = Win32API.DwmSetWindowAttribute(hWnd, 20, ref value, sizeof(int));
+    }
+
+    private void ExpandAll_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is MenuItem menuItem && menuItem.DataContext is RecipeNode node)
+        {
+            SetNodeExpansion(node, true);
+        }
+    }
+
+    private void CollapseAll_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is MenuItem menuItem && menuItem.DataContext is RecipeNode node)
+        {
+            SetNodeExpansion(node, false);
+        }
+    }
+
+    private void SetNodeExpansion(RecipeNode node, bool isExpanded)
+    {
+        node.IsExpanded = isExpanded;
+
+        foreach (var child in node.Children)
+            SetNodeExpansion(child, isExpanded);
     }
 }
