@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.IO.Compression;
-using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Windows.Media;
@@ -17,7 +14,6 @@ public static class IconLoader
     public static Dictionary<int, ImageSource> LoadIcons(string resourceNameSuffix)
     {
         var result = new Dictionary<int, ImageSource>();
-
         var asm = Assembly.GetExecutingAssembly();
         string? fullName = asm.GetManifestResourceNames()
             .FirstOrDefault(n => n.EndsWith(resourceNameSuffix, StringComparison.OrdinalIgnoreCase));
@@ -26,26 +22,35 @@ public static class IconLoader
             return result;
 
         using var resStream = asm.GetManifestResourceStream(fullName);
+
         if (resStream == null)
             return result;
 
         using var memStream = new MemoryStream();
+
         resStream.CopyTo(memStream);
         memStream.Position = 0;
 
         using var archive = new ZipArchive(memStream, ZipArchiveMode.Read);
+
         foreach (var entry in archive.Entries)
         {
             var match = IdPattern.Match(entry.Name);
-            if (!match.Success) continue;
-            if (!int.TryParse(match.Groups[1].Value, out int id)) continue;
+
+            if (!match.Success)
+                continue;
+
+            if (!int.TryParse(match.Groups[1].Value, out int id))
+                continue;
 
             using var entryStream = entry.Open();
             using var entryMem = new MemoryStream();
+
             entryStream.CopyTo(entryMem);
             entryMem.Position = 0;
 
             var bmp = new BitmapImage();
+
             bmp.BeginInit();
             bmp.CacheOption = BitmapCacheOption.OnLoad;
             bmp.StreamSource = entryMem;

@@ -11,6 +11,7 @@ public partial class TreeWindow : Window
     public TreeWindow(RecipeNode root)
     {
         InitializeComponent();
+
         Title = $"배합 트리 - {root.DisplayName}";
         RecipeTreeView.ItemsSource = new List<RecipeNode> { root };
     }
@@ -25,23 +26,19 @@ public partial class TreeWindow : Window
         _ = Win32API.DwmSetWindowAttribute(hWnd, 20, ref value, sizeof(int));
     }
 
-    private void ExpandAll_Click(object sender, RoutedEventArgs e)
+    void ExpandAll_Click(object sender, RoutedEventArgs e)
     {
         if (sender is MenuItem menuItem && menuItem.DataContext is RecipeNode node)
-        {
             SetNodeExpansion(node, true);
-        }
     }
 
-    private void CollapseAll_Click(object sender, RoutedEventArgs e)
+    void CollapseAll_Click(object sender, RoutedEventArgs e)
     {
         if (sender is MenuItem menuItem && menuItem.DataContext is RecipeNode node)
-        {
             SetNodeExpansion(node, false);
-        }
     }
 
-    private void SetNodeExpansion(RecipeNode node, bool isExpanded)
+    static void SetNodeExpansion(RecipeNode node, bool isExpanded)
     {
         node.IsExpanded = isExpanded;
 

@@ -28,16 +28,14 @@ namespace DQMBreedingTool.Models
             }
         }
 
-        public ObservableCollection<RecipeNode> Children { get; set; } = new();
+        public ObservableCollection<RecipeNode> Children { get; set; } = [];
 
         public bool IsRecipeGroup { get; set; }
 
-        public string Header =>
-            IsRecipeGroup
-                ? $"◆ {SourceLabel}"
-                : $"{DisplayName} ({Family} {Rank})";
+        public string Header => IsRecipeGroup ? $"◆ {SourceLabel}" : $"{DisplayName} ({Family} {Rank})";
 
         public event PropertyChangedEventHandler? PropertyChanged;
+
         protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

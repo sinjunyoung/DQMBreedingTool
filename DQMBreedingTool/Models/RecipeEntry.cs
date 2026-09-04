@@ -1,21 +1,13 @@
-using System.Collections.Generic;
-
 namespace DQMBreedingTool.Models;
-
-public enum RecipeSource
-{
-    Fixed,
-    Gold2Parent,
-    Gold4Material,
-    FourGeneration,
-    MonsLibFixed,
-}
 
 public class RecipeEntry
 {
     public int ChildId { get; set; }
-    public List<int> ParentIds { get; set; } = new();
+
+    public List<int> ParentIds { get; set; } = [];
+
     public RecipeSource Source { get; set; }
+
     public int Sequence { get; set; }
 
     public string SourceLabel => Source switch
