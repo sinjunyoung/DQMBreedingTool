@@ -6,8 +6,8 @@ public static class BreedingTreeLayout
 {
     public const double BoxWidth = 40;
     public const double BoxHeight = 40;
-    public const double ColumnGap = 50;
-    public const double RowGap = 12;
+    public const double ColumnGap = 15;
+    public const double RowGap = 5;
 
     public static TreeLayoutResult Compute(RecipeNode root, HashSet<RecipeNode> collapsedNodes)
     {

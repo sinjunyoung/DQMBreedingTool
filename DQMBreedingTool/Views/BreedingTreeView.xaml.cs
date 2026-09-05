@@ -96,9 +96,6 @@ public partial class BreedingTreeView : UserControl
         foreach (var box in layout.Boxes)
         {
             RootCanvas.Children.Add(BuildBoxVisual(box));
-
-            if (HasValidChildren(box.Node))
-                RootCanvas.Children.Add(BuildToggleButton(box));
         }
     }
 
@@ -130,6 +127,8 @@ public partial class BreedingTreeView : UserControl
         var node = box.Node;
         UIElement content;
         Brush backgroundColor;
+        bool hasChildren = HasValidChildren(node);
+        bool isCollapsed = _collapsedNodes.Contains(node);
 
         if (node.IsRecipeGroup)
         {
@@ -218,6 +217,34 @@ public partial class BreedingTreeView : UserControl
             backgroundColor = new SolidColorBrush(Color.FromRgb(0x2E, 0x2E, 0x38));
         }
 
+        if (hasChildren && content is Grid boxGrid)
+        {
+            string indicatorText = isCollapsed ? "+" : "-";
+
+            var badgeGrid = new Grid
+            {
+                HorizontalAlignment = HorizontalAlignment.Right,
+                VerticalAlignment = VerticalAlignment.Bottom,
+                Margin = new Thickness(0, 0, 2, 2),
+                Background = new SolidColorBrush(Color.FromArgb(0x90, 0x00, 0x00, 0x00)),
+                Width = 8,
+                Height = 8
+            };
+
+            badgeGrid.Children.Add(new TextBlock
+            {
+                Text = indicatorText,
+                FontSize = 12,
+                FontWeight = FontWeights.Bold,
+                Foreground = Brushes.White,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
+                Margin = new Thickness(0, -1, 0, 0)
+            });
+
+            boxGrid.Children.Add(badgeGrid);
+        }
+
         var border = new Border
         {
             Width = BreedingTreeLayout.BoxWidth,
@@ -230,6 +257,21 @@ public partial class BreedingTreeView : UserControl
             ToolTip = BuildToolTip(node),
             ContextMenu = BuildContextMenu(node)
         };
+
+        if (hasChildren)
+        {
+            border.Cursor = System.Windows.Input.Cursors.Hand;
+            border.MouseLeftButtonUp += (s, e) =>
+            {
+                if (_collapsedNodes.Contains(node))
+                    _collapsedNodes.Remove(node);
+                else
+                    _collapsedNodes.Add(node);
+
+                RenderTree();
+                e.Handled = true;
+            };
+        }
 
         Canvas.SetLeft(border, box.X);
         Canvas.SetTop(border, box.Y);
@@ -328,7 +370,7 @@ public partial class BreedingTreeView : UserControl
                             var normalStr = string.Join(",", area.NormalFloors);
                             panel.Children.Add(new TextBlock
                             {
-                                Text = $"   - {normalStr} (맑음)",
+                                Text = $"   - {normalStr}층 (맑음)",
                                 FontSize = 10,
                                 Foreground = Brushes.LightGray,
                                 Margin = new Thickness(0, 0, 0, 1)
@@ -343,7 +385,7 @@ public partial class BreedingTreeView : UserControl
 
                                 panel.Children.Add(new TextBlock
                                 {
-                                    Text = $"   - {badStr} (악천후)",
+                                    Text = $"   - {badStr}층 (악천후)",
                                     FontSize = 10,
                                     Foreground = Brushes.LightSkyBlue,
                                     Margin = new Thickness(0, 0, 0, 1)
@@ -355,12 +397,29 @@ public partial class BreedingTreeView : UserControl
             }
         }
 
-        return new ToolTip
+        var toolTip = new ToolTip
         {
-            Background = new SolidColorBrush(Color.FromRgb(0x25, 0x25, 0x2D)),
-            BorderBrush = Brushes.SandyBrown,
-            Content = panel
+            Content = panel,
+            HasDropShadow = true
         };
+
+        var template = new ControlTemplate(typeof(ToolTip));
+        var borderFactory = new FrameworkElementFactory(typeof(Border));
+
+        borderFactory.SetValue(Border.BackgroundProperty, new SolidColorBrush(Color.FromRgb(0x25, 0x25, 0x2D)));
+        borderFactory.SetValue(Border.BorderBrushProperty, Brushes.SandyBrown);
+        borderFactory.SetValue(Border.BorderThicknessProperty, new Thickness(1.5));
+        borderFactory.SetValue(Border.CornerRadiusProperty, new CornerRadius(6));
+
+        var contentPresenterFactory = new FrameworkElementFactory(typeof(ContentPresenter));
+
+        contentPresenterFactory.SetValue(ContentPresenter.MarginProperty, new Thickness(6));
+        borderFactory.AppendChild(contentPresenterFactory);
+
+        template.VisualTree = borderFactory;
+        toolTip.Template = template;
+
+        return toolTip;
     }
 
     ContextMenu BuildContextMenu(RecipeNode node)
@@ -409,40 +468,5 @@ public partial class BreedingTreeView : UserControl
         menu.Items.Add(collapseItem);
 
         return menu;
-    }
-
-    private Button BuildToggleButton(LayoutBox box)
-    {
-        bool isCollapsed = _collapsedNodes.Contains(box.Node);
-        var button = new Button
-        {
-            Content = isCollapsed ? "▶" : "▼",
-            Width = 16,
-            Height = 16,
-            FontSize = 8,
-            Padding = new Thickness(0),
-            HorizontalContentAlignment = HorizontalAlignment.Center,
-            VerticalContentAlignment = VerticalAlignment.Center,
-            Background = new SolidColorBrush(Color.FromRgb(0x3E, 0x3E, 0x48)),
-            Foreground = Brushes.White,
-            BorderBrush = Brushes.SandyBrown,
-            BorderThickness = new Thickness(1),
-            Cursor = System.Windows.Input.Cursors.Hand
-        };
-
-        button.Click += (s, e) =>
-        {
-            if (isCollapsed)
-                _collapsedNodes.Remove(box.Node);
-            else
-                _collapsedNodes.Add(box.Node);
-
-            RenderTree();
-        };
-
-        Canvas.SetLeft(button, box.X + BreedingTreeLayout.BoxWidth + 2);
-        Canvas.SetTop(button, box.Y + BreedingTreeLayout.BoxHeight / 2 - 8);
-
-        return button;
     }
 }
