@@ -1,8 +1,10 @@
+using DQMBreedingTool.Models;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using DQMBreedingTool.Models;
 
 namespace DQMBreedingTool.Views;
 
@@ -168,21 +170,59 @@ public partial class BreedingTreeView : UserControl
     {
         var panel = new StackPanel { MaxWidth = 260 };
 
+        if (node.Icon != null)
+        {
+            panel.Children.Add(new Image
+            {
+                Source = node.Icon,
+                Width = 32,
+                Height = 32,
+                Stretch = Stretch.Uniform,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                Margin = new Thickness(0, 0, 0, 6)
+            });
+        }
+
         panel.Children.Add(new TextBlock
         {
             Text = node.DisplayName,
             FontWeight = FontWeights.Bold,
+            Foreground = Brushes.Yellow,
             FontSize = 13,
+            HorizontalAlignment = HorizontalAlignment.Center,
             Margin = new Thickness(0, 0, 0, 2)
         });
 
-        panel.Children.Add(new TextBlock
+        var familyRow = new StackPanel
+        {
+            Orientation = Orientation.Horizontal,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            Margin = new Thickness(0, 0, 0, 6)
+        };
+
+        var familyConverter = new Converters.FamilyToIconConverter();
+        if (familyConverter.Convert(node.Family, typeof(ImageSource), 0, CultureInfo.CurrentCulture) is BitmapImage familyIconImg)
+        {
+            familyRow.Children.Add(new Image
+            {
+                Source = familyIconImg,
+                Width = 14,
+                Height = 14,
+                Stretch = Stretch.Uniform,
+                VerticalAlignment = VerticalAlignment.Center,
+                Margin = new Thickness(0, 0, 4, 0)
+            });
+        }
+
+        familyRow.Children.Add(new TextBlock
         {
             Text = $"{node.Family} {node.Rank}",
             FontSize = 11,
             Foreground = Brushes.LightGray,
-            Margin = new Thickness(0, 0, 0, 4)
+            VerticalAlignment = VerticalAlignment.Center
         });
+
+        panel.Children.Add(familyRow);
 
         if (node.ScoutAreas.Count > 0)
         {
@@ -192,18 +232,52 @@ public partial class BreedingTreeView : UserControl
                 FontWeight = FontWeights.SemiBold,
                 FontSize = 11,
                 Foreground = Brushes.LightGreen,
-                Margin = new Thickness(0, 0, 0, 2)
+                Margin = new Thickness(0, 4, 0, 2)
             });
 
-            foreach (var area in node.ScoutAreas)
+            var dungeonGroups = node.ScoutAreas.GroupBy(a => a.DungeonName);
+
+            foreach (var group in dungeonGroups)
             {
                 panel.Children.Add(new TextBlock
                 {
-                    Text = "• " + area.ToString(),
-                    FontSize = 10,
+                    Text = $"• {group.Key}",
+                    FontWeight = FontWeights.Medium,
+                    FontSize = 10.5,
                     Foreground = Brushes.LightGreen,
-                    TextWrapping = TextWrapping.Wrap
+                    Margin = new Thickness(0, 2, 0, 1)
                 });
+
+                foreach (var area in group)
+                {
+                    if (area.NormalFloors != null && area.NormalFloors.Count > 0)
+                    {
+                        var normalStr = string.Join(",", area.NormalFloors);
+                        panel.Children.Add(new TextBlock
+                        {
+                            Text = $"   - {normalStr}층 (맑음)",
+                            FontSize = 10,
+                            Foreground = Brushes.LightGray,
+                            Margin = new Thickness(0, 0, 0, 1)
+                        });
+                    }
+
+                    if (area.BadWeatherFloors != null && area.BadWeatherFloors.Count > 0)
+                    {
+                        if (area.NormalFloors == null || !area.NormalFloors.SequenceEqual(area.BadWeatherFloors))
+                        {
+                            var badStr = string.Join(",", area.BadWeatherFloors);
+
+                            panel.Children.Add(new TextBlock
+                            {
+                                Text = $"   - {badStr}층 (악천후)",
+                                FontSize = 10,
+                                Foreground = Brushes.LightSkyBlue,
+                                Margin = new Thickness(0, 0, 0, 1)
+                            });
+                        }
+                    }
+                }
             }
         }
 

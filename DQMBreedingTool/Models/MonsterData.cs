@@ -51,10 +51,10 @@ public class ScoutArea
         var parts = new List<string>();
 
         if (NormalFloors.Count > 0) 
-            parts.Add($"보통 {normal}층");
+            parts.Add($"{normal}층 (맑음)");
 
         if (BadWeatherFloors.Count > 0)
-            parts.Add($"악천후 {bad}층");
+            parts.Add($"{bad}층 (악천후)");
 
         return $"{DungeonName} ({string.Join(" / ", parts)})";
     }

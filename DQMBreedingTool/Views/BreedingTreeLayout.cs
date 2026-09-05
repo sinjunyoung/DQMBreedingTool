@@ -25,9 +25,9 @@ public class TreeLayoutResult
 
 public static class BreedingTreeLayout
 {
-    public const double BoxWidth = 64;
-    public const double BoxHeight = 64;
-    public const double ColumnGap = 50;
+    public const double BoxWidth = 48;
+    public const double BoxHeight = 48;
+    public const double ColumnGap = 40;
     public const double RowGap = 12;
 
     public static TreeLayoutResult Compute(RecipeNode root, HashSet<RecipeNode> collapsedNodes)
