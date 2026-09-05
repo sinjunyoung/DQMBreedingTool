@@ -32,7 +32,6 @@ public partial class BreedingTreeView : UserControl
         if (node == null)
             return;
 
-        // 그룹 노드든 일반 노드든 자식이 유효하다면 기본적으로 축소 목록에 넣습니다.
         if (!isRoot && HasValidChildren(node))
             _collapsedNodes.Add(node);
 
@@ -153,13 +152,69 @@ public partial class BreedingTreeView : UserControl
         }
         else
         {
-            content = new Image
+            var grid = new Grid();
+
+            grid.Children.Add(new Image
             {
                 Source = node.Icon,
                 Stretch = Stretch.Uniform,
-                Margin = new Thickness(4)
-            };
+                Margin = new Thickness(2)
+            });
 
+            var familyConverter = new Converters.FamilyToIconConverter();
+            if (familyConverter.Convert(node.Family, typeof(ImageSource), 0, CultureInfo.CurrentCulture) is BitmapImage familyIconImg)
+            {
+                grid.Children.Add(new Image
+                {
+                    Source = familyIconImg,
+                    Width = 12,
+                    Height = 12,
+                    Stretch = Stretch.Uniform,
+                    Opacity = 1,
+                    HorizontalAlignment = HorizontalAlignment.Left,
+                    VerticalAlignment = VerticalAlignment.Bottom
+                });
+            }
+
+            if (!string.IsNullOrEmpty(node.Rank))
+            {
+                var rankGrid = new Grid
+                {
+                    HorizontalAlignment = HorizontalAlignment.Right,
+                    VerticalAlignment = VerticalAlignment.Top,
+                    Margin = new Thickness(0, 1, 3, 0),
+                    Opacity = 0.8
+                };
+
+                int[] offsets = [-1, 1];
+
+                foreach (int x in offsets)
+                {
+                    foreach (int y in offsets)
+                    {
+                        rankGrid.Children.Add(new TextBlock
+                        {
+                            Text = node.Rank,
+                            FontSize = 10,
+                            FontWeight = FontWeights.Bold,
+                            Foreground = Brushes.Black,
+                            Margin = new Thickness(x, y, -x, -y)
+                        });
+                    }
+                }
+
+                rankGrid.Children.Add(new TextBlock
+                {
+                    Text = node.Rank,
+                    FontSize = 10,
+                    FontWeight = FontWeights.Bold,
+                    Foreground = Brushes.Yellow
+                });
+
+                grid.Children.Add(rankGrid);
+            }
+
+            content = grid;
             backgroundColor = new SolidColorBrush(Color.FromRgb(0x2E, 0x2E, 0x38));
         }
 
@@ -273,7 +328,7 @@ public partial class BreedingTreeView : UserControl
                             var normalStr = string.Join(",", area.NormalFloors);
                             panel.Children.Add(new TextBlock
                             {
-                                Text = $"   - {normalStr}층 (맑음)",
+                                Text = $"   - {normalStr} (맑음)",
                                 FontSize = 10,
                                 Foreground = Brushes.LightGray,
                                 Margin = new Thickness(0, 0, 0, 1)
@@ -288,7 +343,7 @@ public partial class BreedingTreeView : UserControl
 
                                 panel.Children.Add(new TextBlock
                                 {
-                                    Text = $"   - {badStr}층 (악천후)",
+                                    Text = $"   - {badStr} (악천후)",
                                     FontSize = 10,
                                     Foreground = Brushes.LightSkyBlue,
                                     Margin = new Thickness(0, 0, 0, 1)

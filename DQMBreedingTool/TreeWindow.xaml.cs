@@ -11,7 +11,7 @@ public partial class TreeWindow : Window
     {
         InitializeComponent();
 
-        Title = $"배합 트리 - {root.DisplayName}";
+        Title = $"배합 다이어그램 - {root.DisplayName}";
         Loaded += (_, _) => GraphView.ShowTree(root);
     }
 
