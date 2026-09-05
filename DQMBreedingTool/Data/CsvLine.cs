@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Text;
 
 namespace DQMBreedingTool.Data;
@@ -13,7 +14,6 @@ public static class CsvLine
         for (int i = 0; i < line.Length; i++)
         {
             char c = line[i];
-
             if (inQuotes)
             {
                 if (c == '"')
@@ -24,27 +24,34 @@ public static class CsvLine
                         i++;
                     }
                     else
+                    {
                         inQuotes = false;
+                    }
                 }
                 else
+                {
                     sb.Append(c);
+                }
             }
             else
             {
                 if (c == '"')
+                {
                     inQuotes = true;
+                }
                 else if (c == ',')
                 {
                     fields.Add(sb.ToString());
                     sb.Clear();
                 }
                 else
+                {
                     sb.Append(c);
+                }
             }
         }
 
         fields.Add(sb.ToString());
-
-        return [.. fields];
+        return fields.ToArray();
     }
 }
