@@ -29,9 +29,10 @@ public partial class BreedingTreeView : UserControl
 
     private void InitAllCollapsed(RecipeNode node, bool isRoot)
     {
-        if (node == null || node.IsRecipeGroup) 
+        if (node == null)
             return;
 
+        // 그룹 노드든 일반 노드든 자식이 유효하다면 기본적으로 축소 목록에 넣습니다.
         if (!isRoot && HasValidChildren(node))
             _collapsedNodes.Add(node);
 
@@ -43,10 +44,10 @@ public partial class BreedingTreeView : UserControl
     {
         foreach (var child in node.Children)
         {
-            if (!child.IsRecipeGroup) 
+            if (!child.IsRecipeGroup)
                 return true;
 
-            if (HasValidChildren(child)) 
+            if (HasValidChildren(child))
                 return true;
         }
 
@@ -55,14 +56,11 @@ public partial class BreedingTreeView : UserControl
 
     private void CollapseAllDescendants(RecipeNode node)
     {
+        if (HasValidChildren(node))
+            _collapsedNodes.Add(node);
+
         foreach (var child in node.Children)
         {
-            if (child.IsRecipeGroup)
-            {
-                CollapseAllDescendants(child);
-                continue;
-            }
-
             if (HasValidChildren(child))
                 _collapsedNodes.Add(child);
 
@@ -72,14 +70,10 @@ public partial class BreedingTreeView : UserControl
 
     private void ExpandAllDescendants(RecipeNode node)
     {
+        _collapsedNodes.Remove(node);
+
         foreach (var child in node.Children)
         {
-            if (child.IsRecipeGroup)
-            {
-                ExpandAllDescendants(child);
-                continue;
-            }
-
             _collapsedNodes.Remove(child);
             ExpandAllDescendants(child);
         }
@@ -135,27 +129,49 @@ public partial class BreedingTreeView : UserControl
     Border BuildBoxVisual(LayoutBox box)
     {
         var node = box.Node;
-        UIElement? imageContent = null;
+        UIElement content;
+        Brush backgroundColor;
 
-        if (node.Icon != null)
+        if (node.IsRecipeGroup)
         {
-            imageContent = new Image
+            string groupText = node.Children.Count == 4 ? "4체" : "2체";
+
+            var grid = new Grid();
+            grid.Children.Add(new TextBlock
+            {
+                Text = groupText,
+                FontSize = 11,
+                FontWeight = FontWeights.Bold,
+                Foreground = Brushes.White,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
+                TextAlignment = TextAlignment.Center
+            });
+
+            content = grid;
+            backgroundColor = new SolidColorBrush(Color.FromRgb(0x45, 0x35, 0x25));
+        }
+        else
+        {
+            content = new Image
             {
                 Source = node.Icon,
                 Stretch = Stretch.Uniform,
                 Margin = new Thickness(4)
             };
+
+            backgroundColor = new SolidColorBrush(Color.FromRgb(0x2E, 0x2E, 0x38));
         }
 
         var border = new Border
         {
             Width = BreedingTreeLayout.BoxWidth,
             Height = BreedingTreeLayout.BoxHeight,
-            Background = new SolidColorBrush(Color.FromRgb(0x2E, 0x2E, 0x38)),
+            Background = backgroundColor,
             BorderBrush = Brushes.SandyBrown,
             BorderThickness = new Thickness(2),
             CornerRadius = new CornerRadius(8),
-            Child = imageContent,
+            Child = content,
             ToolTip = BuildToolTip(node),
             ContextMenu = BuildContextMenu(node)
         };
@@ -170,7 +186,7 @@ public partial class BreedingTreeView : UserControl
     {
         var panel = new StackPanel { MaxWidth = 260 };
 
-        if (node.Icon != null)
+        if (!node.IsRecipeGroup && node.Icon != null)
         {
             panel.Children.Add(new Image
             {
@@ -193,88 +209,91 @@ public partial class BreedingTreeView : UserControl
             Margin = new Thickness(0, 0, 0, 2)
         });
 
-        var familyRow = new StackPanel
+        if (!node.IsRecipeGroup)
         {
-            Orientation = Orientation.Horizontal,
-            HorizontalAlignment = HorizontalAlignment.Center,
-            Margin = new Thickness(0, 0, 0, 6)
-        };
-
-        var familyConverter = new Converters.FamilyToIconConverter();
-        if (familyConverter.Convert(node.Family, typeof(ImageSource), 0, CultureInfo.CurrentCulture) is BitmapImage familyIconImg)
-        {
-            familyRow.Children.Add(new Image
+            var familyRow = new StackPanel
             {
-                Source = familyIconImg,
-                Width = 14,
-                Height = 14,
-                Stretch = Stretch.Uniform,
-                VerticalAlignment = VerticalAlignment.Center,
-                Margin = new Thickness(0, 0, 4, 0)
-            });
-        }
+                Orientation = Orientation.Horizontal,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                Margin = new Thickness(0, 0, 0, 6)
+            };
 
-        familyRow.Children.Add(new TextBlock
-        {
-            Text = $"{node.Family} {node.Rank}",
-            FontSize = 11,
-            Foreground = Brushes.LightGray,
-            VerticalAlignment = VerticalAlignment.Center
-        });
-
-        panel.Children.Add(familyRow);
-
-        if (node.ScoutAreas.Count > 0)
-        {
-            panel.Children.Add(new TextBlock
+            var familyConverter = new Converters.FamilyToIconConverter();
+            if (familyConverter.Convert(node.Family, typeof(ImageSource), 0, CultureInfo.CurrentCulture) is BitmapImage familyIconImg)
             {
-                Text = "서식지",
-                FontWeight = FontWeights.SemiBold,
+                familyRow.Children.Add(new Image
+                {
+                    Source = familyIconImg,
+                    Width = 14,
+                    Height = 14,
+                    Stretch = Stretch.Uniform,
+                    VerticalAlignment = VerticalAlignment.Center,
+                    Margin = new Thickness(0, 0, 4, 0)
+                });
+            }
+
+            familyRow.Children.Add(new TextBlock
+            {
+                Text = $"{node.Family} {node.Rank}",
                 FontSize = 11,
-                Foreground = Brushes.LightGreen,
-                Margin = new Thickness(0, 4, 0, 2)
+                Foreground = Brushes.LightGray,
+                VerticalAlignment = VerticalAlignment.Center
             });
 
-            var dungeonGroups = node.ScoutAreas.GroupBy(a => a.DungeonName);
+            panel.Children.Add(familyRow);
 
-            foreach (var group in dungeonGroups)
+            if (node.ScoutAreas.Count > 0)
             {
                 panel.Children.Add(new TextBlock
                 {
-                    Text = $"• {group.Key}",
-                    FontWeight = FontWeights.Medium,
-                    FontSize = 10.5,
+                    Text = "서식지",
+                    FontWeight = FontWeights.SemiBold,
+                    FontSize = 11,
                     Foreground = Brushes.LightGreen,
-                    Margin = new Thickness(0, 2, 0, 1)
+                    Margin = new Thickness(0, 4, 0, 2)
                 });
 
-                foreach (var area in group)
+                var dungeonGroups = node.ScoutAreas.GroupBy(a => a.DungeonName);
+
+                foreach (var group in dungeonGroups)
                 {
-                    if (area.NormalFloors != null && area.NormalFloors.Count > 0)
+                    panel.Children.Add(new TextBlock
                     {
-                        var normalStr = string.Join(",", area.NormalFloors);
-                        panel.Children.Add(new TextBlock
-                        {
-                            Text = $"   - {normalStr}층 (맑음)",
-                            FontSize = 10,
-                            Foreground = Brushes.LightGray,
-                            Margin = new Thickness(0, 0, 0, 1)
-                        });
-                    }
+                        Text = $"• {group.Key}",
+                        FontWeight = FontWeights.Medium,
+                        FontSize = 10.5,
+                        Foreground = Brushes.LightGreen,
+                        Margin = new Thickness(0, 2, 0, 1)
+                    });
 
-                    if (area.BadWeatherFloors != null && area.BadWeatherFloors.Count > 0)
+                    foreach (var area in group)
                     {
-                        if (area.NormalFloors == null || !area.NormalFloors.SequenceEqual(area.BadWeatherFloors))
+                        if (area.NormalFloors != null && area.NormalFloors.Count > 0)
                         {
-                            var badStr = string.Join(",", area.BadWeatherFloors);
-
+                            var normalStr = string.Join(",", area.NormalFloors);
                             panel.Children.Add(new TextBlock
                             {
-                                Text = $"   - {badStr}층 (악천후)",
+                                Text = $"   - {normalStr}층 (맑음)",
                                 FontSize = 10,
-                                Foreground = Brushes.LightSkyBlue,
+                                Foreground = Brushes.LightGray,
                                 Margin = new Thickness(0, 0, 0, 1)
                             });
+                        }
+
+                        if (area.BadWeatherFloors != null && area.BadWeatherFloors.Count > 0)
+                        {
+                            if (area.NormalFloors == null || !area.NormalFloors.SequenceEqual(area.BadWeatherFloors))
+                            {
+                                var badStr = string.Join(",", area.BadWeatherFloors);
+
+                                panel.Children.Add(new TextBlock
+                                {
+                                    Text = $"   - {badStr}층 (악천후)",
+                                    FontSize = 10,
+                                    Foreground = Brushes.LightSkyBlue,
+                                    Margin = new Thickness(0, 0, 0, 1)
+                                });
+                            }
                         }
                     }
                 }
@@ -298,26 +317,26 @@ public partial class BreedingTreeView : UserControl
             Header = "하위 전체 확장",
             Icon = new Image
             {
-                Source = new System.Windows.Media.Imaging.BitmapImage(new Uri("pack://application:,,,/Assets/Images/Expand.png", UriKind.Absolute)),
+                Source = new BitmapImage(new Uri("pack://application:,,,/Assets/Images/Expand.png", UriKind.Absolute)),
                 Width = 16,
                 Height = 16,
                 VerticalAlignment = VerticalAlignment.Center,
                 HorizontalAlignment = HorizontalAlignment.Center
             }
         };
-        
+
         expandItem.Click += (s, e) =>
         {
             ExpandAllDescendants(node);
             RenderTree();
         };
 
-        var collapseItem = new MenuItem 
-        { 
+        var collapseItem = new MenuItem
+        {
             Header = "하위 전체 축소",
             Icon = new Image
             {
-                Source = new System.Windows.Media.Imaging.BitmapImage(new Uri("pack://application:,,,/Assets/Images/Collapse.png", UriKind.Absolute)),
+                Source = new BitmapImage(new Uri("pack://application:,,,/Assets/Images/Collapse.png", UriKind.Absolute)),
                 Width = 16,
                 Height = 16,
                 VerticalAlignment = VerticalAlignment.Center,
