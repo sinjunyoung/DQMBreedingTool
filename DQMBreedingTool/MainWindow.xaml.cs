@@ -1,12 +1,10 @@
 using DQMBreedingTool.Data;
 using DQMBreedingTool.Models;
 using DQMBreedingTool.Services;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Interop;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace DQMBreedingTool;
@@ -37,9 +35,7 @@ public partial class MainWindow : Window
     void InitFilters()
     {
         List<FilterItem> familyList = [];
-
-        string[] fixedFamilies =
-        ["전체", "슬라임계", "드래곤계", "자연계", "마수계", "물질계", "악마계", "좀비계", "???계"];
+        string[] fixedFamilies = ["전체", "슬라임계", "드래곤계", "자연계", "마수계", "물질계", "악마계", "좀비계", "???계"];
 
         foreach (var f in fixedFamilies)
         {
@@ -54,12 +50,14 @@ public partial class MainWindow : Window
         FamilyFilterCombo.SelectedIndex = 0;
 
         RankFilterCombo.Items.Add("전체");
+
         foreach (var r in _repo.Ranks)
             RankFilterCombo.Items.Add(r);
+
         RankFilterCombo.SelectedIndex = 0;
     }
 
-    private ImageSource? GetFamilyIcon(string? familyName)
+    private static BitmapImage? GetFamilyIcon(string? familyName)
     {
         string? iconPath = familyName switch
         {
@@ -74,7 +72,8 @@ public partial class MainWindow : Window
             _ => null
         };
 
-        if (string.IsNullOrEmpty(iconPath)) return null;
+        if (string.IsNullOrEmpty(iconPath)) 
+            return null;
 
         try
         {
@@ -111,10 +110,12 @@ public partial class MainWindow : Window
 
     void TreeButton_Click(object sender, RoutedEventArgs e)
     {
-        if (sender is not Button btn || btn.Tag is not int monsterId) return;
+        if (sender is not Button btn || btn.Tag is not int monsterId) 
+            return;
 
         var root = _repo.BuildTree(monsterId);
         var treeWindow = new TreeWindow(root) { Owner = this };
+
         treeWindow.Show();
     }
 

@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -13,7 +12,7 @@ namespace DQMBreedingTool.Models
         public string Family { get; set; } = "";
         public string Rank { get; set; } = "";
         public string SourceLabel { get; set; } = "";
-        public List<ScoutArea> ScoutAreas { get; set; } = new();
+        public List<ScoutArea> ScoutAreas { get; set; } = [];
         public ImageSource? Icon { get; set; }
 
         private bool _isExpanded = true;
@@ -30,7 +29,7 @@ namespace DQMBreedingTool.Models
             }
         }
 
-        public ObservableCollection<RecipeNode> Children { get; set; } = new();
+        public ObservableCollection<RecipeNode> Children { get; set; } = [];
 
         public bool IsRecipeGroup { get; set; }
 
@@ -38,17 +37,20 @@ namespace DQMBreedingTool.Models
         {
             get
             {
-                if (IsRecipeGroup) return $"◆ {SourceLabel}";
+                if (IsRecipeGroup) 
+                    return $"◆ {SourceLabel}";
+
                 var baseText = $"{DisplayName} ({Family} {Rank})";
-                if (ScoutAreas.Count == 0) return baseText;
+
+                if (ScoutAreas.Count == 0)
+                    return baseText;
+
                 return $"{baseText} - {string.Join(", ", ScoutAreas)}";
             }
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
-        protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+
+        protected void OnPropertyChanged([CallerMemberName] string? propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

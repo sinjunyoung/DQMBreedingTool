@@ -17,8 +17,8 @@ public class LayoutEdge
 
 public class TreeLayoutResult
 {
-    public List<LayoutBox> Boxes { get; } = new();
-    public List<LayoutEdge> Edges { get; } = new();
+    public List<LayoutBox> Boxes { get; } = [];
+    public List<LayoutEdge> Edges { get; } = [];
     public double Width { get; set; }
     public double Height { get; set; }
 }
@@ -40,7 +40,8 @@ public static class BreedingTreeLayout
 
         double AssignY(RecipeNode node, int depth)
         {
-            if (node.IsRecipeGroup) return 0;
+            if (node.IsRecipeGroup) 
+                return 0;
 
             bool isCollapsed = collapsedNodes.Contains(node);
             var validChildren = node.Children.Where(c => !c.IsRecipeGroup).ToList();

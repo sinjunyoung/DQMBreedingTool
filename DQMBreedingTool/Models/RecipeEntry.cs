@@ -3,7 +3,7 @@ namespace DQMBreedingTool.Models;
 public class RecipeEntry
 {
     public int ChildId { get; set; }
-    public List<int> ParentIds { get; set; } = new();
+    public List<int> ParentIds { get; set; } = [];
     public RecipeSource Source { get; set; }
     public int Sequence { get; set; }
 

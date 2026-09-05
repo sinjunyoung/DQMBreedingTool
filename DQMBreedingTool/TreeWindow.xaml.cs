@@ -10,6 +10,7 @@ public partial class TreeWindow : Window
     public TreeWindow(RecipeNode root)
     {
         InitializeComponent();
+
         Title = $"배합 트리 - {root.DisplayName}";
         Loaded += (_, _) => GraphView.ShowTree(root);
     }
