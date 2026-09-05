@@ -1,0 +1,11 @@
+<UserControl x:Class="DQMBreedingTool.Views.BreedingTreeView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006">
+    <ScrollViewer x:Name="Scroller"
+                  HorizontalScrollBarVisibility="Auto"
+                  VerticalScrollBarVisibility="Auto"
+                  Background="#FF1E1E1E">
+        <Canvas x:Name="RootCanvas" Margin="30" />
+    </ScrollViewer>
+</UserControl>
