@@ -1,0 +1,227 @@
+<UserControl x:Class="DQMBreedingTool.Views.GameTabView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:conv="clr-namespace:DQMBreedingTool.Converters"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006">
+
+    <UserControl.Resources>
+        <conv:FamilyToIconConverter x:Key="FamilyToIconConverter"/>
+    </UserControl.Resources>
+
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" Background="{DynamicResource BgPanel}" Padding="10" Margin="0,0,0,10" CornerRadius="4">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <TextBlock Text="이름" Foreground="White" VerticalAlignment="Center" Margin="0,0,6,0" />
+                <TextBox x:Name="NameFilterBox" Width="150" Margin="0,0,16,0" KeyDown="NameFilterBox_KeyDown" />
+
+                <TextBlock Text="종족" Foreground="White" VerticalAlignment="Center" Margin="0,0,6,0" />
+                <ComboBox x:Name="FamilyFilterCombo" Width="110" Margin="0,0,16,0" HorizontalContentAlignment="Left">
+
+                    <ComboBox.ItemContainerStyle>
+                        <Style TargetType="ComboBoxItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                        </Style>
+                    </ComboBox.ItemContainerStyle>
+
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <Border Width="20" Height="20" ClipToBounds="True" Margin="0,0,8,0" VerticalAlignment="Center">
+                                    <Image Source="{Binding Icon}" Width="20" Stretch="UniformToFill" VerticalAlignment="Top" />
+                                </Border>
+                                <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+
+                <TextBlock Text="랭크" Foreground="White" VerticalAlignment="Center" Margin="0,0,6,0" />
+                <ComboBox x:Name="RankFilterCombo" Width="80" Margin="0,0,16,0" />
+
+                <Button Style="{DynamicResource GrayButton}" Width="80" Click="SearchButton_Click">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <Image Source="/Assets/Images/Search.png" Width="24" Height="24" Margin="0,0,4,0" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+
+                <TextBlock x:Name="ResultCountText" Foreground="White" Margin="16,0,0,0" VerticalAlignment="Center" Opacity="0.7" />
+            </StackPanel>
+        </Border>
+
+        <ListView Grid.Row="1" x:Name="ResultListView">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Width="50">
+                        <GridViewColumn.Header>
+                            <Image Source="/Assets/Images/Icon.png" Width="32" Height="32" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                        </GridViewColumn.Header>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Border Width="32" Height="32" ClipToBounds="True" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                    <Image Source="{Binding Icon}" Stretch="Uniform" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                </Border>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn Width="130">
+                        <GridViewColumn.Header>
+                            <Image Source="/Assets/Images/Name.png" Width="28" Height="28" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                        </GridViewColumn.Header>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Grid Height="24" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                </Grid>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn Width="100">
+                        <GridViewColumn.Header>
+                            <Image Source="/Assets/Images/Slime.png" Width="28" Height="28" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                        </GridViewColumn.Header>
+
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Grid Height="24" VerticalAlignment="Center">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="22"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Border Grid.Column="0" Width="20" Height="20" ClipToBounds="True" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                        <Image Source="{Binding Family, Converter={StaticResource FamilyToIconConverter}}" Width="20" Stretch="UniformToFill" VerticalAlignment="Top" HorizontalAlignment="Left" />
+                                    </Border>
+                                    <TextBlock Grid.Column="1" Text="{Binding Family}" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="4,0,0,0"/>
+                                </Grid>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn Width="50">
+                        <GridViewColumn.Header>
+                            <Image Source="/Assets/Images/Rank.png" Width="32" Height="32" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                        </GridViewColumn.Header>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Grid Height="24" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding Rank}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Grid>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn Width="60">
+                        <GridViewColumn.Header>
+                            <Image Source="/Assets/Images/HP.png" Width="32" Height="32" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                        </GridViewColumn.Header>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Grid Height="24" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding Hp}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Grid>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn Width="60">
+                        <GridViewColumn.Header>
+                            <Image Source="/Assets/Images/MP.png" Width="32" Height="32" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                        </GridViewColumn.Header>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Grid Height="24" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding Mp}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Grid>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn Width="60">
+                        <GridViewColumn.Header>
+                            <Image Source="/Assets/Images/Attack.png" Width="30" Height="30" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                        </GridViewColumn.Header>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Grid Height="24" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding Atk}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Grid>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn Width="60">
+                        <GridViewColumn.Header>
+                            <Image Source="/Assets/Images/Shield.png" Width="30" Height="30" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                        </GridViewColumn.Header>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Grid Height="24" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding Def}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Grid>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn Width="60">
+                        <GridViewColumn.Header>
+                            <Image Source="/Assets/Images/Running.png" Width="30" Height="30" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                        </GridViewColumn.Header>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Grid Height="24" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding Agi}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Grid>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn Width="60">
+                        <GridViewColumn.Header>
+                            <Image Source="/Assets/Images/Brain.png" Width="30" Height="30" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                        </GridViewColumn.Header>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Grid Height="24" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding Wis}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Grid>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn Width="120">
+                        <GridViewColumn.Header>
+                            <Image Source="/Assets/Images/Skill.png" Width="30" Height="30" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                        </GridViewColumn.Header>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Grid Height="24" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding SkillName}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Grid>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn Width="60">
+                        <GridViewColumn.Header>
+                            <Image Source="/Assets/Images/Recipe.png" Width="30" Height="30" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                        </GridViewColumn.Header>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Style="{DynamicResource GrayButton}" Tag="{Binding Id}" Click="TreeButton_Click" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="-6,-2,-6,-2" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                                    <Image Source="/Assets/Images/Recipe.png" Width="24" Height="24" Stretch="Uniform" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                </Button>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                </GridView>
+            </ListView.View>
+        </ListView>
+    </Grid>
+</UserControl>

@@ -14,10 +14,10 @@ public class DataRepository
     readonly Dictionary<string, List<MonsterData>> _byFamily = [];
     readonly HashSet<int> _wildOnlyConfirmed = [];
 
-    public void Load()
+    public void Load(string dataResource, string iconResource)
     {
-        var csvs = EmbeddedDataLoader.LoadCsvSet("dqm_data.zip");
-        _icons = IconLoader.LoadIcons("icon.zip");
+        var csvs = EmbeddedDataLoader.LoadCsvSet(dataResource);
+        _icons = IconLoader.LoadIcons(iconResource);
 
         LoadMonsters(csvs["enmy_kind_full.csv"]);
         LoadScoutLocations(csvs["dungeon_names.csv"], csvs["area_monster.csv"]);
