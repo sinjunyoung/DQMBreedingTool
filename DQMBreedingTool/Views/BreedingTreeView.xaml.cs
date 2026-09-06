@@ -199,7 +199,7 @@ public partial class BreedingTreeView : UserControl
                     Height = 10,
                     RadiusX = 1,
                     RadiusY = 1,
-                    Margin = new Thickness(1, 1, 0, 0),
+                    Margin = new Thickness(2, 2, 0, 0),
                     HorizontalAlignment = HorizontalAlignment.Left,
                     VerticalAlignment = VerticalAlignment.Top,
                     Fill = new ImageBrush(familyIconImg)
