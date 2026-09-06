@@ -47,7 +47,6 @@
     <None Remove="BUILD_Single.bat" />
     <None Remove="LICENSE.txt" />
     <None Remove="README.md" />
-    <None Remove="Resources\dqm2_icon.zip" />
     <None Remove="Resources\icon.zip" />
   </ItemGroup>
 
@@ -58,7 +57,6 @@
   <ItemGroup>
     <EmbeddedResource Include="Resources\dqm1_data.zip" />
     <EmbeddedResource Include="Resources\dqm1_icon.zip" />
-    <EmbeddedResource Include="Resources\dqm2_icon.zip" />
   </ItemGroup>
 
   <ItemGroup>

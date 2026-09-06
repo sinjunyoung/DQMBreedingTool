@@ -5,7 +5,7 @@ namespace DQMBreedingTool.Views;
 public static class BreedingTreeLayout
 {
     public const double BoxWidth = 40;
-    public const double BoxHeight = 40;
+    public const double BoxHeight = 42;
     public const double ColumnGap = 15;
     public const double RowGap = 5;
 

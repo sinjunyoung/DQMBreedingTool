@@ -157,21 +157,25 @@ public partial class BreedingTreeView : UserControl
             {
                 Source = node.Icon,
                 Stretch = Stretch.Uniform,
-                Margin = new Thickness(2)
+                Margin = new Thickness(2, 2, 2, 2)
             });
 
             var familyConverter = new Converters.FamilyToIconConverter();
             if (familyConverter.Convert(node.Family, typeof(ImageSource), 0, CultureInfo.CurrentCulture) is BitmapImage familyIconImg)
             {
-                grid.Children.Add(new Image
+                grid.Children.Add(new Rectangle
                 {
-                    Source = familyIconImg,
                     Width = 12,
                     Height = 12,
-                    Stretch = Stretch.Uniform,
-                    Opacity = 1,
+                    RadiusX = 1,
+                    RadiusY = 1,
+                    Margin = new Thickness(2, 2, 0, 0),
                     HorizontalAlignment = HorizontalAlignment.Left,
-                    VerticalAlignment = VerticalAlignment.Bottom
+                    VerticalAlignment = VerticalAlignment.Top,
+                    Fill = new ImageBrush(familyIconImg)
+                    {
+                        Stretch = Stretch.Uniform
+                    }
                 });
             }
 
@@ -181,8 +185,7 @@ public partial class BreedingTreeView : UserControl
                 {
                     HorizontalAlignment = HorizontalAlignment.Right,
                     VerticalAlignment = VerticalAlignment.Top,
-                    Margin = new Thickness(0, 1, 3, 0),
-                    Opacity = 0.8
+                    Margin = new Thickness(0, 1, 3, 0)
                 };
 
                 int[] offsets = [-1, 1];
